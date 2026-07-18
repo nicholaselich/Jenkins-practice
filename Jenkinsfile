@@ -29,11 +29,12 @@ pipeline {
 
 	stage('Use Secret') {
 		steps {
-			withCredentials([string(credentialsId: 'demo-api-key', variable: 'API_KEY')])
+			withCredentials([string(credentialsId: 'demo-api-key', variable: 'API_KEY')]) {
 				sh '''
 					echo "Using API key to call fake service..."
 					echo "Key starts with: ${API_KEY:0:6}****"
 				   '''
+				}
 			}
 		}
     }
