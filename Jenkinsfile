@@ -27,12 +27,18 @@ pipeline {
             }
         }
 
+	stage('Build Image') {
+		steps {
+			sh 'docker build -t nel1ch/jenkins-practice:${BUILD_NUMBER} .'
+		}
+	}
+
 	stage('Use Secret') {
 		steps {
-			withCredentials([string(credentialsId: 'demo-api-key', variable: 'API_KEY')]) {
+			withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
 				sh '''#!/bin/bash
-					echo "Using API key to call fake service..."
-					echo "Key starts with: ${API_KEY:0:6}****"
+					echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+					docker push nel1ch/jenkins-practice:${BUILD_NUMBER}
 				   '''
 				}
 			}
